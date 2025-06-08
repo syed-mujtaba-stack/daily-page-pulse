@@ -2,12 +2,28 @@
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Link } from "react-router-dom";
-import { authors, articles } from "@/data/blogData";
+import { useAuthors } from "@/hooks/useAuthors";
+import { useArticles } from "@/hooks/useArticles";
 
 const Authors = () => {
+  const { data: authors = [], isLoading: authorsLoading } = useAuthors();
+  const { data: articles = [], isLoading: articlesLoading } = useArticles();
+
   const getAuthorArticleCount = (authorId: string) => {
     return articles.filter(article => article.author.id === authorId).length;
   };
+
+  if (authorsLoading || articlesLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <div className="container mx-auto px-4 py-16 text-center">
+          <h1 className="text-2xl font-bold mb-4">Loading authors...</h1>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">

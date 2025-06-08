@@ -5,14 +5,27 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { articles } from "@/data/blogData";
+import { useArticles } from "@/hooks/useArticles";
 import { ArrowLeft } from "lucide-react";
 
 const ArticleDetail = () => {
   const { id } = useParams();
+  const { data: articles = [], isLoading, error } = useArticles();
   const article = articles.find(a => a.id === id);
 
-  if (!article) {
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <div className="container mx-auto px-4 py-16 text-center">
+          <h1 className="text-2xl font-bold mb-4">Loading article...</h1>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error || !article) {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />

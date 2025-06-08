@@ -4,14 +4,29 @@ import Navigation from "@/components/Navigation";
 import ArticleCard from "@/components/ArticleCard";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { articles, authors } from "@/data/blogData";
+import { useAuthors } from "@/hooks/useAuthors";
+import { useArticles } from "@/hooks/useArticles";
 import { ArrowLeft } from "lucide-react";
 
 const AuthorProfile = () => {
   const { id } = useParams();
+  const { data: authors = [], isLoading: authorsLoading } = useAuthors();
+  const { data: articles = [], isLoading: articlesLoading } = useArticles();
   
   const author = authors.find(a => a.id === id);
   const authorArticles = articles.filter(article => article.author.id === id);
+
+  if (authorsLoading || articlesLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <div className="container mx-auto px-4 py-16 text-center">
+          <h1 className="text-2xl font-bold mb-4">Loading...</h1>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!author) {
     return (

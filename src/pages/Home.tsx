@@ -6,11 +6,12 @@ import FeaturedArticle from "@/components/FeaturedArticle";
 import ArticleCard from "@/components/ArticleCard";
 import CategoryFilter from "@/components/CategoryFilter";
 import Footer from "@/components/Footer";
-import { articles } from "@/data/blogData";
+import { useArticles } from "@/hooks/useArticles";
 
 const Home = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const { data: articles = [], isLoading, error } = useArticles();
 
   const featuredArticle = articles.find(article => article.featured);
   const otherArticles = articles.filter(article => !article.featured);
@@ -27,9 +28,32 @@ const Home = () => {
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    // Optional: navigate to a search results page
-    // navigate(`/search?q=${encodeURIComponent(query)}`);
   };
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation onSearch={handleSearch} />
+        <div className="container mx-auto px-4 py-16 text-center">
+          <h1 className="text-2xl font-bold mb-4">Error loading articles</h1>
+          <p className="text-muted-foreground">Please try again later.</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation onSearch={handleSearch} />
+        <div className="container mx-auto px-4 py-16 text-center">
+          <h1 className="text-2xl font-bold mb-4">Loading articles...</h1>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">

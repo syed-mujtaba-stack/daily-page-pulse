@@ -4,13 +4,28 @@ import Navigation from "@/components/Navigation";
 import ArticleCard from "@/components/ArticleCard";
 import CategoryFilter from "@/components/CategoryFilter";
 import Footer from "@/components/Footer";
-import { articles, categories } from "@/data/blogData";
+import { useArticles } from "@/hooks/useArticles";
+import { useCategories } from "@/hooks/useCategories";
 
 const CategoryPage = () => {
   const { categorySlug } = useParams();
+  const { data: articles = [], isLoading: articlesLoading } = useArticles();
+  const { data: categories = [], isLoading: categoriesLoading } = useCategories();
   
   const category = categories.find(c => c.slug === categorySlug);
   const categoryArticles = articles.filter(article => article.category.slug === categorySlug);
+
+  if (articlesLoading || categoriesLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navigation />
+        <div className="container mx-auto px-4 py-16 text-center">
+          <h1 className="text-2xl font-bold mb-4">Loading...</h1>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!category) {
     return (
