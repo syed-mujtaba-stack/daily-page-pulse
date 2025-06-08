@@ -7,6 +7,8 @@ export const useArticles = () => {
   return useQuery({
     queryKey: ["articles"],
     queryFn: async (): Promise<Article[]> => {
+      console.log("Fetching articles...");
+      
       const { data, error } = await supabase
         .from("articles")
         .select(`
@@ -21,7 +23,14 @@ export const useArticles = () => {
         throw error;
       }
 
-      return data.map((article) => ({
+      console.log("Raw articles data:", data);
+
+      if (!data) {
+        console.log("No articles data returned");
+        return [];
+      }
+
+      const mappedArticles = data.map((article) => ({
         id: article.id,
         title: article.title,
         excerpt: article.excerpt || "",
@@ -51,6 +60,9 @@ export const useArticles = () => {
         imageUrl: article.image_url || "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&h=400&fit=crop",
         featured: article.featured || false,
       }));
+
+      console.log("Mapped articles:", mappedArticles);
+      return mappedArticles;
     },
   });
 };

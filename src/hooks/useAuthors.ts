@@ -7,6 +7,8 @@ export const useAuthors = () => {
   return useQuery({
     queryKey: ["authors"],
     queryFn: async (): Promise<Author[]> => {
+      console.log("Fetching authors...");
+      
       const { data, error } = await supabase
         .from("authors")
         .select("*")
@@ -17,7 +19,14 @@ export const useAuthors = () => {
         throw error;
       }
 
-      return data.map((author) => ({
+      console.log("Raw authors data:", data);
+
+      if (!data) {
+        console.log("No authors data returned");
+        return [];
+      }
+
+      const mappedAuthors = data.map((author) => ({
         id: author.id,
         name: author.name,
         bio: author.bio || "",
@@ -29,6 +38,9 @@ export const useAuthors = () => {
           github: author.github || undefined,
         },
       }));
+
+      console.log("Mapped authors:", mappedAuthors);
+      return mappedAuthors;
     },
   });
 };
